@@ -17,11 +17,21 @@ st.write('''
 # App prices of stocks
 ''')
 
-ticker_list = st.multiselect('Choose your shares', datas.columns)
+st.sidebar.header('Filters')
+
+ticker_list = st.sidebar.multiselect('Choose your shares', datas.columns)
 if ticker_list:
     datas = datas[ticker_list]
     if len(ticker_list) == 1:
         stock = ticker_list[0]
         datas = datas.rename(columns={stock: 'Close'})
+
+start_date = datas.index.min().to_pydatetime()
+end_date = datas.index.max().to_pydatetime()
+interval_date = st.sidebar.slider('Filter a time interval', min_value=start_date, max_value=end_date, 
+                  value=(start_date, end_date))
+
+datas = datas.loc[interval_date[0]:interval_date[1]]
+
 
 st.line_chart(datas)
